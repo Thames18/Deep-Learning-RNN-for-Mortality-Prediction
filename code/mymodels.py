@@ -3,6 +3,7 @@ import torch.nn as nn
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 import numpy as np
 import torch.nn.functional as fun
+from torch.autograd import Variable
 ##### DO NOT MODIFY OR REMOVE THIS VALUE #####
 checksum = '169a9820bbc999009327026c9d76bcf1'
 ##### DO NOT MODIFY OR REMOVE THIS VALUE #####
@@ -89,19 +90,51 @@ class MyVariableRNN(nn.Module):
 	def __init__(self, dim_input):
 		super(MyVariableRNN, self).__init__()
 		# You may use the input argument 'dim_input', which is basically the number of features
-		self.input = nn.Linear(in_features=dim_input, out_features=32) #unimproved version
-		self.rnn = nn.GRU(input_size = 32, hidden_size=16, num_layers=1, batch_first=True) #unimproved version
-		self.input2 = nn.Linear(in_features=16, out_features=2) #unimproved version
+		#self.input = nn.Linear(in_features=dim_input, out_features=32) #unimproved version
+		#self.rnn = nn.GRU(input_size = 32, hidden_size=16, num_layers=1, batch_first=True) #unimproved version
+		#self.input2 = nn.Linear(in_features=16, out_features=2) #unimproved version
+		self.batch_first=True
+		self.input = nn.Sequential(nn.Dropout(0.6), nn.Linear(dim_input, 128, bias=False), nn.Dropout(0.5)) #improved version
+		self.layer1 = nn.GRU(input_size=128, hidden_size=128, num_layers=1, batch_first=True) #improved version
+		self.layer11 = nn.Linear(in_features=128, out_features=1) #improved version
+		self.layer11.bias.data.zero_() #improved version
+		self.layer2 = nn.GRU(input_size=128, hidden_size=128, num_layers=1, batch_first=True) #improved version
+		self.layer21 = nn.Linear(in_features=128, out_features=128) #improved version
+		self.layer21.bias.data.zero_() #improved version
+		self.layero = nn.Sequential(nn.Dropout(0.5), nn.Linear(in_features= 128, out_features=2)) #improved version
+		self.layero[1].bias.data.zero_() #improved version
+		
 
 	def forward(self, input_tuple):
 		# HINT: Following two methods might be useful
 		# 'pack_padded_sequence' and 'pad_packed_sequence' from torch.nn.utils.rnn
+		#seq, lengths = input_tuple #unimproved version
+		#seq = torch.tanh(self.input(seq)) #unimproved version
+		#lengths_cpu = lengths.detach().cpu()
+		#seq = pack_padded_sequence(seq, lengths_cpu, batch_first=True, enforce_sorted=False ) #unimproved version
+		#seq, _ = self.rnn(seq) #unimproved version
+		#seq, _ = pad_packed_sequence(seq, batch_first= True) #unimproved version 
+		#seq = self.input2(seq[:, -1, :]) #unimproved version 
+		#improved version
 		seq, lengths = input_tuple
-		seq = torch.tanh(self.input(seq)) #unimproved version
-		lengths_cpu = lengths.detach().cpu()
-		seq = pack_padded_sequence(seq, lengths_cpu, batch_first=True, enforce_sorted=False ) #unimproved version
-		seq, _ = self.rnn(seq) #unimproved version
-		seq, _ = pad_packed_sequence(seq, batch_first= True) #unimproved version 
-		seq = self.input2(seq[:, -1, :]) #unimproved version 
-
+		a1, b1 = seq.size(0), seq.size(1)
+		x = self.input(seq)
+		bi = pack_padded_sequence(x, lengths, batch_first=self.batch_first)
+		a , _ = self.layer1(bi)
+		b , _ =  pad_packed_sequence(a, batch_first=self.batch_first)
+		c = Variable(torch.FloatTensor([[1.0 if i < lengths[idx] else 0.0 for i in range(b1)] for idx in range(a1)]).unsqueeze(2), requires_grad=False)
+		d = self.layer11(b)
+		def maxv(x, c):
+				expo = torch.exp(x)
+				ms = expo * c
+				st = torch.sum(ms, dim=1, keepdim=True)
+				return ms/st
+		negative = torch.finfo(d.dtype).min
+		d_mask = d.masked_fill( c== 0, negative)
+		alpha = torch.softmax(d_mask, dim=1)
+		e, _ = self.layer2(bi)
+		out, _ = pad_packed_sequence(e, batch_first=self.batch_first)
+		out = torch.tanh(self.layer21(out))
+		seq = torch.bmm(torch.transpose(alpha, 1, 2), out * x).squeeze(1)
+		seq = self.layero(seq)
 		return seq
