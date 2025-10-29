@@ -93,8 +93,8 @@ class MyVariableRNN(nn.Module):
 		#self.input = nn.Linear(in_features=dim_input, out_features=32) #unimproved version
 		#self.rnn = nn.GRU(input_size = 32, hidden_size=16, num_layers=1, batch_first=True) #unimproved version
 		#self.input2 = nn.Linear(in_features=16, out_features=2) #unimproved version
-		self.batch_first=True
-		self.input = nn.Sequential(nn.Dropout(0.6), nn.Linear(dim_input, 128, bias=False), nn.Dropout(0.5)) #improved version
+		self.batch_first=True #improved version
+		self.input = nn.Sequential(nn.Dropout(0.6), nn.Linear(dim_input, 128, bias=False), nn.Dropout(0.)) #improved version
 		self.layer1 = nn.GRU(input_size=128, hidden_size=128, num_layers=1, batch_first=True) #improved version
 		self.layer11 = nn.Linear(in_features=128, out_features=1) #improved version
 		self.layer11.bias.data.zero_() #improved version
@@ -116,25 +116,25 @@ class MyVariableRNN(nn.Module):
 		#seq, _ = pad_packed_sequence(seq, batch_first= True) #unimproved version 
 		#seq = self.input2(seq[:, -1, :]) #unimproved version 
 		#improved version
-		seq, lengths = input_tuple
-		a1, b1 = seq.size(0), seq.size(1)
-		x = self.input(seq)
-		bi = pack_padded_sequence(x, lengths, batch_first=self.batch_first)
-		a , _ = self.layer1(bi)
-		b , _ =  pad_packed_sequence(a, batch_first=self.batch_first)
-		c = Variable(torch.FloatTensor([[1.0 if i < lengths[idx] else 0.0 for i in range(b1)] for idx in range(a1)]).unsqueeze(2), requires_grad=False)
-		d = self.layer11(b)
-		def maxv(x, c):
-				expo = torch.exp(x)
-				ms = expo * c
-				st = torch.sum(ms, dim=1, keepdim=True)
-				return ms/st
-		negative = torch.finfo(d.dtype).min
-		d_mask = d.masked_fill( c== 0, negative)
-		alpha = torch.softmax(d_mask, dim=1)
-		e, _ = self.layer2(bi)
-		out, _ = pad_packed_sequence(e, batch_first=self.batch_first)
-		out = torch.tanh(self.layer21(out))
-		seq = torch.bmm(torch.transpose(alpha, 1, 2), out * x).squeeze(1)
-		seq = self.layero(seq)
+		seq, lengths = input_tuple #improved version
+		a1, b1 = seq.size(0), seq.size(1) #improved version
+		x = self.input(seq) #improved version
+		bi = pack_padded_sequence(x, lengths, batch_first=self.batch_first) #improved version
+		a , _ = self.layer1(bi) #improved version
+		b , _ =  pad_packed_sequence(a, batch_first=self.batch_first) #improved version
+		c = Variable(torch.FloatTensor([[1.0 if i < lengths[idx] else 0.0 for i in range(b1)] for idx in range(a1)]).unsqueeze(2), requires_grad=False) #improved version
+		d = self.layer11(b) #improved version
+		def maxv(x, c): #improved version
+				expo = torch.exp(x) #improved version
+				ms = expo * c #improved version
+				st = torch.sum(ms, dim=1, keepdim=True) #improved version
+				return ms/st #improved version 
+		negative = torch.finfo(d.dtype).min #improved version
+		d_mask = d.masked_fill( c== 0, negative) #improved version
+		alpha = torch.softmax(d_mask, dim=1) #improved version
+		e, _ = self.layer2(bi) #improved version
+		out, _ = pad_packed_sequence(e, batch_first=self.batch_first) #improved version
+		out = torch.tanh(self.layer21(out)) #improved version
+		seq = torch.bmm(torch.transpose(alpha, 1, 2), out * x).squeeze(1) #improved version
+		seq = self.layero(seq) #improved version
 		return seq

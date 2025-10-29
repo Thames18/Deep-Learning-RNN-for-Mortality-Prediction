@@ -32,8 +32,7 @@ def plot_learning_curves(train_losses, valid_losses, train_accuracies, valid_acc
 	ax2.set_xlabel("epoch")
 	ax2.set_ylabel("Accuracy")
 	plt.tight_layout()
-	fig.savefig('learning_curves_MLP_imprv2.png', dpi=200, bbox_inches="tight")
-	plt.show()
+	fig.savefig('learning_curves_RNN_imprvar.png', dpi=200, bbox_inches="tight")
 	plt.close()
 
 def plot_confusion_matrix(results, class_names, normalize=True):
@@ -54,5 +53,5 @@ def plot_confusion_matrix(results, class_names, normalize=True):
 	ax.set_ylabel("True")
 	ax.set_title("Normalized conusion Matrix")
 	plt.tight_layout()
-	fig.savefig("confusion_matrix_MLP_imprv2.png", dpi=200, bbox_inches="tight")
+	fig.savefig("confusion_matrix_RNN_imprvar.png", dpi=200, bbox_inches="tight")
 	plt.close()

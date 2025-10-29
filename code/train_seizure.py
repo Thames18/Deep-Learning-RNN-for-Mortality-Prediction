@@ -12,12 +12,12 @@ from mymodels import MyMLP, MyCNN, MyRNN
 #TODO: https://pytorch.org/docs/stable/notes/windows.html#multiprocessing-error-without-if-clause-protection
 
 # Set a correct path to the seizure data file you downloaded
-PATH_TRAIN_FILE = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\seizure\seizure_train.csv"
-PATH_VALID_FILE = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\seizure\seizure_validation.csv"
-PATH_TEST_FILE = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\seizure\seizure_test.csv"
+PATH_TRAIN_FILE = "../data/seizure/seizure_train.csv"
+PATH_VALID_FILE = "../data/seizure/seizure_validation.csv"
+PATH_TEST_FILE = "../data/seizure/seizure_test.csv"
 
 # Path for saving model
-PATH_OUTPUT = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\seizure\output\seizure"
+PATH_OUTPUT = "../output/seizure/"
 os.makedirs(PATH_OUTPUT, exist_ok=True)
 
 # Some parameters

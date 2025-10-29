@@ -12,7 +12,6 @@ PATH_VALIDATION = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\mortality\
 PATH_TEST = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\mortality/test"
 PATH_OUTPUT = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\mortality\processed"
 
-
 def convert_icd9(icd9_object):
 	"""
 	:param icd9_object: ICD-9 code (Pandas/Numpy object).
@@ -21,15 +20,22 @@ def convert_icd9(icd9_object):
 	icd9_str = str(icd9_object)
 	# TODO: Extract the the first 3 or 4 alphanumeric digits prior to the decimal point from a given ICD-9 code.
 	# TODO: Read the homework description carefully.
-	m = 3
-	if str(icd9_object)[0].isalpha() and str(icd9_object).startswith('V') ==True:
-		m = 4
-	if m >= len(str(icd9_object)):
-		m= len(str(icd9_object))
-	converted = str(icd9_object)[0:1]
 
-	return converted
-
+	s = icd9_str.strip().upper().replace(',' , '')
+	if not s or s == 'NAN':
+		return None
+	s = ''.join(ch for ch in s if ch.isalnum())
+	if not s:
+		return None
+	
+	if s.startswith("E"):
+		if len(s) < 4:
+			return None
+		return s[:4]
+	else:
+		if len(s) < 3:
+			return None
+		return s[:3]
 
 def build_codemap(df_icd9, transform):
 	"""

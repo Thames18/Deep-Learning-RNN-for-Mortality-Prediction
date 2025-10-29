@@ -22,7 +22,7 @@ PATH_TEST_IDS = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\mortality\pr
 PATH_OUTPUT = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\output\mortality"
 os.makedirs(PATH_OUTPUT, exist_ok=True)
 
-NUM_EPOCHS = 10
+NUM_EPOCHS = 30
 BATCH_SIZE = 32
 USE_CUDA = True  # Set 'True' if you want to use GPU
 NUM_WORKERS = 0
@@ -116,7 +116,4 @@ def predict_mortality(model, device, data_loader):
 
 test_prob = predict_mortality(best_model, device, test_loader)
 test_id = pickle.load(open(PATH_TEST_IDS, "rb"))
-print("num test ids:", len(test_id))
-print("num pred:", len(test_prob))
-assert len(test_id) == len(test_prob), "length" 
 make_kaggle_submission(test_id, test_prob, PATH_OUTPUT)
