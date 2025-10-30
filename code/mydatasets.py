@@ -56,9 +56,17 @@ def calculate_num_features(seqs):
 	:return: the calculated number of features
 	"""
 	# TODO: Calculate the number of features (diagnoses codes in the train set)
-	feature = reduce(lambda a, b: a + b, seqs)
-	feature = reduce(lambda a, b: a + b, feature)
-	return max(feature) + 2
+	if not seqs:
+		return 2
+	#skip empty patients
+	feature = reduce(lambda acc, p: acc + p if p else acc, seqs, [])
+	if not feature:
+		return 2
+	#skip empty visits
+	features = reduce(lambda acc, v: acc + v if v else acc, feature, [])
+	if not features:
+		return 2
+	return max(features) + 2
 
 
 class VisitSequenceWithLabelDataset(Dataset):

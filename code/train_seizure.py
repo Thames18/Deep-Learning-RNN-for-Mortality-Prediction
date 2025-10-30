@@ -12,16 +12,16 @@ from mymodels import MyMLP, MyCNN, MyRNN
 #TODO: https://pytorch.org/docs/stable/notes/windows.html#multiprocessing-error-without-if-clause-protection
 
 # Set a correct path to the seizure data file you downloaded
-PATH_TRAIN_FILE = "../data/seizure/seizure_train.csv"
-PATH_VALID_FILE = "../data/seizure/seizure_validation.csv"
-PATH_TEST_FILE = "../data/seizure/seizure_test.csv"
+PATH_TRAIN_FILE = "../data/data/seizure/seizure_train.csv"
+PATH_VALID_FILE = "../data/data/seizure/seizure_validation.csv"
+PATH_TEST_FILE = "../data/data/seizure/seizure_test.csv"
 
 # Path for saving model
-PATH_OUTPUT = "../output/seizure/"
+PATH_OUTPUT = "../data/output/seizure/"
 os.makedirs(PATH_OUTPUT, exist_ok=True)
 
 # Some parameters
-MODEL_TYPE = 'MLP'  # TODO: Change this to 'MLP', 'CNN', or 'RNN' according to your task
+MODEL_TYPE = 'CNN'  # TODO: Change this to 'MLP', 'CNN', or 'RNN' according to your task
 NUM_EPOCHS = 30
 BATCH_SIZE = 32
 USE_CUDA = False  # Set 'True' if you want to use GPU

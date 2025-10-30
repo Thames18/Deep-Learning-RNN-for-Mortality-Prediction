@@ -7,10 +7,10 @@ import numpy as np
 checksum = '169a9820bbc999009327026c9d76bcf1'
 ##### DO NOT MODIFY OR REMOVE THIS VALUE #####
 
-PATH_TRAIN = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\mortality\train"
-PATH_VALIDATION = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\mortality\validation"
-PATH_TEST = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\mortality/test"
-PATH_OUTPUT = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\mortality\processed"
+PATH_TRAIN = "../data/data/mortality/train/"
+PATH_VALIDATION = "../data/data/mortality/validation/"
+PATH_TEST = "../data/data/mortality/test/"
+PATH_OUTPUT = "../data/data/mortality/processed/"
 
 def convert_icd9(icd9_object):
 	"""
@@ -21,28 +21,26 @@ def convert_icd9(icd9_object):
 	# TODO: Extract the the first 3 or 4 alphanumeric digits prior to the decimal point from a given ICD-9 code.
 	# TODO: Read the homework description carefully.
 
-	s = icd9_str.strip().upper().replace(',' , '')
-	if not s or s == 'NAN':
-		return None
+	s = icd9_str.upper()
 	s = ''.join(ch for ch in s if ch.isalnum())
 	if not s:
 		return None
 	
 	if s.startswith("E"):
-		if len(s) < 4:
-			return None
-		return s[:4]
+		return s[:4] if len(s) >=4 else None
 	else:
-		if len(s) < 3:
-			return None
-		return s[:3]
+		return s[:3] if len(s) >=3 else None
 
 def build_codemap(df_icd9, transform):
 	"""
 	:return: Dict of code map {main-digits of ICD9: unique feature ID}
 	"""
 	# TODO: We build a code map using ONLY train data. Think about how to construct validation/test sets using this.
-	df_digits = df_icd9['ICD9_CODE'].apply(transform)
+	df_digits = df_icd9['ICD9_CODE']
+	df_digits = df_digits.dropna()
+	df_digits = df_digits.astype(str).str.strip()
+	df_digits = df_digits[~df_digits.str.lower().eq('nan')]
+	df_digits = df_digits.apply(transform)
 	df_digits = df_digits.dropna()
 	df_digits = df_digits[df_digits.str.len() > 0]
 	df_digits_unique = sorted(df_digits.unique())

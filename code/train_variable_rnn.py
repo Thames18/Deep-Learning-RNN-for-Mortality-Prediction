@@ -12,14 +12,14 @@ from mydatasets import calculate_num_features, VisitSequenceWithLabelDataset, vi
 from mymodels import MyVariableRNN
 
 # Set a correct path to the data files that you preprocessed
-PATH_TRAIN_SEQS = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\mortality\processed\mortality.seqs.train"
-PATH_TRAIN_LABELS = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\mortality\processed\mortality.labels.train"
-PATH_VALID_SEQS = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\mortality\processed\mortality.seqs.validation"
-PATH_VALID_LABELS = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\mortality\processed\mortality.labels.validation"
-PATH_TEST_SEQS = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\mortality\processed\mortality.seqs.test"
-PATH_TEST_LABELS = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\mortality\processed\mortality.labels.test"
-PATH_TEST_IDS = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\data\mortality\processed\mortality.ids.test"
-PATH_OUTPUT = r"C:\Users\musta\Desktop\CSE-6250\HW4_2025fall\output\mortality"
+PATH_TRAIN_SEQS = "../data/data/mortality/processed/mortality.seqs.train"
+PATH_TRAIN_LABELS = "../data/data/mortality/processed/mortality.labels.train"
+PATH_VALID_SEQS = "../data/data/mortality/processed/mortality.seqs.validation"
+PATH_VALID_LABELS = "../data/data/mortality/processed/mortality.labels.validation"
+PATH_TEST_SEQS = "../data/data/mortality/processed/mortality.seqs.test"
+PATH_TEST_LABELS = "../data/data/mortality/processed/mortality.labels.test"
+PATH_TEST_IDS = "../data/data/mortality/processed/mortality.ids.test"
+PATH_OUTPUT = "../data/output/mortality/"
 os.makedirs(PATH_OUTPUT, exist_ok=True)
 
 NUM_EPOCHS = 30

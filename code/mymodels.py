@@ -29,39 +29,39 @@ class MyMLP(nn.Module):
 		return x
 
 class MyCNN(nn.Module):
-	def __init__(self, in_len = 178, num_clas = 5):
+	def __init__(self, num_clas = 5):
 		super(MyCNN, self).__init__()
-		self.conv1 = nn.Conv1d(1, 16, 5, padding = 2) #unimprovved version
-		self.bn1   = nn.BatchNorm1d(16) #unimprovved version
-		self.conv2 = nn.Conv1d(16,num_clas, kernel_size = 5, padding = 2) #unimprovved 
-		#self.conv1 = nn.Sequential(nn.Conv1d(1, 32, kernel_size=7 , padding = 3),nn.BatchNorm1d(32), nn.GELU()) #improvved version
-		#self.bn1   = nn.Sequential(nn.Conv1d(32, 64, kernel_size=5 , padding = 2),nn.BatchNorm1d(64), nn.GELU())#improvved version
-		#self.conv2 = nn.Sequential(nn.Conv1d(64, 128, kernel_size=5 , padding = 2),nn.BatchNorm1d(128), nn.GELU()) #improvved version
-		#self.improve1 = nn.Sequential(nn.Conv1d(128, 64, kernel_size=1 , padding = 2),nn.BatchNorm1d(64), nn.GELU()) #improvved version
-		#self.arrange = nn.Conv1d(64, num_clas, kernel_size=1) #improvved version
-		#self.gap = nn.AdaptiveAvgPool1d(1) #improvved version
+		#self.conv1 = nn.Conv1d(in_channels=1, out_channels=6, kernel_size=5) #unimprovved version
+		#self.conv2 = nn.Conv1d(6,16, 5) #unimprovved 
+		#self.pool = nn.MaxPool1d(kernel_size=2) #unimprovved 
+		#self.fc1 = nn.Linear(in_features=16 * 41, out_features=128) #unimprovved 
+		#self.fc2 = nn.Linear(128, num_clas) #unimprovved 
+		self.conv1 = nn.Conv1d(in_channels=1, out_channels=6, kernel_size=5) #improvved version
+		self.conv2   = nn.Conv1d(6,16, 5) #improvved version
+		self.pool = nn.MaxPool1d(kernel_size=2) #improvved version
+		self.fc1 = nn.Linear(in_features=16 * 41, out_features=128) #improvved version
+		self.fc2 = nn.Linear(128, num_clas) #improvved version
+		self.impr = nn.Dropout(p = 0.2) #improvved version
 
 	def forward(self, x):
-		x = fun.relu(self.bn1(self.conv1(x))) #unimprovved version
-		x = self.conv2(x) #unimprovved version
-		x = x.mean(dim= -1) #unimprovved version
-		#x = self.conv1(x) #improvved version
-		#x = self.bn1(x) #improvved version
-		#x = self.conv2(x) #improvved version
-		#x = self.improve1(x) #improvved version
-		#x = self.arrange(x) #improvved version
-		#x = self.gap(x).squeeze(-1) #improvved version
-
+		#x = self.pool(fun.relu(self.conv1(x))) #unimprovved version
+		#x = self.pool(fun.relu(self.conv2(x))) #unimprovved version
+		#x = x.view(-1, 16 * 41) #unimprovved version
+		#x = fun.relu(self.fc1(x)) #unimprovved version
+		#x = self.fc2(x) #unimprovved version
+		x = self.pool(fun.relu(self.impr(self.conv1(x)))) #improvved version
+		x = self.pool(fun.relu(self.impr(self.conv2(x)))) #improvved version
+		x = x.view(-1, 16 * 41) #improvved version
+		x = fun.relu(self.impr(self.fc1(x))) #improvved version
+		x = self.fc2(x) #improvved version
 		return x
 
 
 class MyRNN(nn.Module):
 	def __init__(self, num_clas = 5):
 		super(MyRNN, self).__init__()
-		#self.rnn = nn.GRU(input_size = 1, hidden_size = 16, num_layers = 1, batch_first=True) #unimproved version
-		#self.fc  = nn.Linear(in_features=16, out_features=5) #unimproved version
-		self.rnn = nn.GRU(input_size = 1, hidden_size = 16, num_layers = 1, batch_first=True, dropout= 0.2) #improved version
-		self.fc  = nn.Linear(in_features=16, out_features=5) #improved version
+		self.rnn = nn.GRU(input_size = 1, hidden_size = 16, num_layers = 1, batch_first=True) #unimproved version
+		self.fc  = nn.Linear(in_features=16, out_features=5) #unimproved version
 		#self.rnn = nn.GRU(input_size = 1, hidden_size = 64, num_layers = 2, batch_first=True) #improved version
 		#self.attention1   = nn.Linear(64 , 64, bias = True)#improved version
 		#self.attention2 = nn.Linear( 64, 1 , bias = True) #improved version
@@ -70,21 +70,21 @@ class MyRNN(nn.Module):
 		#self.norm = nn.LayerNorm(1) #improved version
 
 	def forward(self, x):
-		#x, _ = self.rnn(x) #unimproved version 
-		#x = self.fc(x[:, -1, :]) #unimproved version
-		x, _ = self.rnn(x) #improved version 
-		x = fun.relu(x[:, -1, :]) #improved version
-		x = self.fc(x) #improved version
-		#x = self.norm(x) #nimproved version
-		#out, _ = self.rnn(x) #nimproved version
-		#s = self.attention2(torch.tanh(self.attention1(out))).squeeze(-1) #nimproved version
-		#w = fun.softmax(s, dim=1) #nimproved version
-		#vec = torch.bmm(w.unsqueeze(1), out).squeeze(1) #nimproved version
-		#vec = self.drop(vec) #nimproved version
-		#log = self.fc(vec) #nimproved version
-
+		x, _ = self.rnn(x) #unimproved version 
+		x = self.fc(x[:, -1, :]) #unimproved version
+		##x, _ = self.rnn(x) #improved version 
+		##x = fun.relu(x[:, -1, :]) #improved version
+		##x = self.fc(x) #improved version
+		##x = self.norm(x) #improved version
+		#out, _ = self.rnn(x) #improved version
+		#s = self.attention2(torch.tanh(self.attention1(out))).squeeze(-1) #improved version
+		#w = fun.softmax(s, dim=1) #improved version
+		#vec = torch.bmm(w.unsqueeze(1), out).squeeze(1) #improved version
+		#vec = self.drop(vec) #improved version
+		#log = self.fc(vec) #improved version
+		#return x #unimproved version
+		#return log #improved version
 		return x
-
 
 class MyVariableRNN(nn.Module):
 	def __init__(self, dim_input):
